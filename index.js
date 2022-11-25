@@ -2,11 +2,11 @@
 var inquirer = require('inquirer');
 var fs = require('fs');
 var buf = '';
-var entries = {};
+var team = {};
 
 function init()
 {
-
+    
 }
 
 //an introduction to the script that confirms user intent before capturing CLI focus
