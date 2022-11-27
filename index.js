@@ -141,6 +141,7 @@ const managerQuestions = [
         type: 'input',
         name: 'office',
         message: 'Enter the team manager\'s office number:',
+        validate: isAnswerBlank,
     },
 ];
 
@@ -168,6 +169,7 @@ const engineerQuestions = [
         type: 'input',
         name: 'github',
         message: 'Enter the engineer\'s GitHub username:',
+        validate: isAnswerBlank,
     },
 ];
 
@@ -195,6 +197,7 @@ const internQuestions = [
         type: 'input',
         name: 'school',
         message: 'Enter the intern\'s school name:',
+        validate: isAnswerBlank,
     },
 ];
 
