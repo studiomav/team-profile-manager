@@ -1,7 +1,42 @@
 //importing required packages
 var inquirer = require('inquirer');
 var fs = require('fs');
-var buf = '';
+
+//initializing the html buffer
+var buf = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  <title>Project Team</title>
+  <style>
+    .member
+    {
+      width: auto;
+      background-color: rgb(192, 255, 234);
+      padding: 25px;
+      margin: 50px;
+      border-radius: 25px;
+      box-shadow: 0px 5px 5px;
+    }
+    .inner
+    {
+      width: auto;
+      background-color: white;
+      padding: 25px;
+      border-radius: 25px;
+    }
+  </style>
+</head>
+<body>
+  <div style="width: 100%; height: auto; text-align: center; background-color: rgb(192, 255, 234);">
+    <h1>My Team</h1>
+  </div>
+  </br>
+  <div class="container">
+    <div class="row">`;
 var team = {};
 
 var manager = {};
@@ -28,7 +63,58 @@ function writeToFile(fileName, data)
 //take all entries and builds an html page
 function buildHTML()
 {
-    console.log("done, building html");
+    //adds the sole manager to the project
+    console.log("Responses logged, generating HTML");
+    buf +=
+    `<div class="col-sm member">
+        <h3>${manager.name}</h3>
+        <h4>Manager</h4>
+        <div class="inner">
+        ID: ${manager.ID}</br>
+        Email: ${manager.email}</br>
+        Office Number: ${manager.office}
+        </div>
+    </div>`;
+
+    //for each engineer we create an html block
+    engineers.forEach(engineer =>
+    {
+        buf +=
+        `<div class="col-sm member">
+        <h3>${engineer.name}</h3>
+        <h4>Engineer</h4>
+        <div class="inner">
+        ID: ${engineer.ID}</br>
+        Email: ${engineer.email}</br>
+        Office Number: ${engineer.github}
+        </div>
+        </div>`;
+    });
+
+    //for each intern we create an html block
+    interns.forEach(intern =>
+    {
+        buf +=
+        `<div class="col-sm member">
+        <h3>${intern.name}</h3>
+        <h4>Intern</h4>
+        <div class="inner">
+        ID: ${intern.ID}</br>
+        Email: ${intern.email}</br>
+        Office Number: ${intern.school}
+        </div>
+        </div>`;
+    });
+
+    //closing out the html tags
+    buf +=
+    `</div>
+    </div>
+    </body>
+    </html>`;
+
+    //saving our buffer to the disk
+    writeToFile("output.html", buf);
 }
 
 //these are the main questions that are used to generate the team manager
@@ -112,6 +198,7 @@ const internQuestions = [
     },
 ];
 
+//the function to add an engineer
 function addEngineer()
 {
     inquirer.prompt(engineerQuestions)
@@ -121,8 +208,8 @@ function addEngineer()
         newEngineer.name = answers.name;  
         newEngineer.ID = answers.ID;
         newEngineer.email = answers.email;
-        newEngineer.office = answers.office;
-
+        newEngineer.github = answers.github;
+        engineers.push(newEngineer);
         addMenu();
     })
     .catch((error) =>
@@ -137,6 +224,7 @@ function addEngineer()
     });
 }
 
+//the function to add an intern
 function addIntern()
 {
     inquirer.prompt(internQuestions)
@@ -147,7 +235,7 @@ function addIntern()
         newIntern.ID = answers.ID;
         newIntern.email = answers.email;
         newIntern.school = answers.school;
-
+        interns.push(newIntern);
         addMenu();
     })
     .catch((error) =>
@@ -162,6 +250,7 @@ function addIntern()
     });
 }
 
+//the menu for adding team members, which we loop back around to after each member
 function addMenu()
 {
     inquirer.prompt(
@@ -170,14 +259,14 @@ function addMenu()
                 type: 'list',
                 name: 'selection',
                 message: 'Would you like to add another employee?',
-                choice: ['Add an Engineer', 'Add an Intern', 'Finished'],
+                choices: ['Add an Engineer', 'Add an Intern', 'Finished'],
             }
         ]).then((response) =>
         {
-            if (response.choice == 'Add an Engineer') return addEngineer();
-            else if (response.choice == 'Add an Intern') return addIntern();
-            else if (response.choice == 'Finished') return buildHTML();
-            else return console.log('Something went very wrong.');
+            if (response.selection == 'Add an Engineer') return addEngineer();
+            else if (response.selection == 'Add an Intern') return addIntern();
+            else if (response.selection == 'Finished') return buildHTML();
+            else return console.log(selection);
         });
 }
 
@@ -199,7 +288,7 @@ function addManager()
     {
         if (error.isTtyError)
         {
-            console.log('prompt cannot- be rendered in the current environment.');
+            console.log('prompt cannot be rendered in the current environment.');
         } else
         {
             console.log('something went wrong.')
